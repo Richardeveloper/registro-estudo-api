@@ -26,6 +26,20 @@ public class RegistroService {
 		return registro.orElseThrow( () -> new ResourceNotFoundException("Registro não existe."));
 	}
 	
+	public List<Registro> findByDisciplina(String disciplina){
+		List<Registro> registros = repository.findByDisciplina(disciplina);
+		return registros;
+	}
+	
+	public List<Registro> findByPeriodoMatutino(){
+		List<Registro> registros = repository.findByPeriodoMatutino();
+		return registros;
+	}
+	public List<Registro> findByPeriodoVespertino(){
+		List<Registro> registros = repository.findByPeriodoVespertino();
+		return registros;
+	}
+	
 	public Registro save(Registro registro) {
 		registro.duration();
 		return repository.save(registro);
@@ -50,4 +64,5 @@ public class RegistroService {
 		registro.setFim(obj.getFim());
 		registro.setPeriodo(obj.getPeriodo());
 	}
+	
 }

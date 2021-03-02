@@ -129,10 +129,5 @@ public class Registro implements Serializable {
 		return true;
 	}
 	
-	@Override
-	public String toString() {
-		return "Registro [disciplina=" + disciplina + ", data=" + data + ", inicio=" + inicio + ", fim=" + fim
-				+ ", duracao=" + duracao + ", periodo=" + periodo + "]";
-	}	
 }
 
