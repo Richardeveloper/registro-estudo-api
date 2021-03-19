@@ -1,10 +1,13 @@
 package com.richardeveloper.controllers;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.validation.Valid;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,8 +18,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.richardeveloper.dto.RegistroDto;
 import com.richardeveloper.models.Registro;
 import com.richardeveloper.services.RegistroService;
 
@@ -28,40 +33,56 @@ public class RegistroController {
 	@Autowired
 	private RegistroService service;
 	
+	@Autowired
+	private ModelMapper modelMapper;
+	
 	@GetMapping
-	public ResponseEntity<List<Registro>> findAll(){
+	public ResponseEntity<List<RegistroDto>> findAll(){
 		List<Registro> registros = service.findAll();
-		return new ResponseEntity<List<Registro>>(registros, HttpStatus.OK);
+		List<RegistroDto> dto = Arrays.asList(modelMapper.map(registros, RegistroDto[].class));
+		return new ResponseEntity<List<RegistroDto>>(dto, HttpStatus.OK);
+	}
+	
+	@GetMapping(params = {"page", "size"})
+	public ResponseEntity<Page<RegistroDto>> findAllPagination(@RequestParam("page") int page, @RequestParam("size") int size){
+		Page<Registro> registros = service.findAllPagination(page, size);
+		Page<RegistroDto> dto = registros.map(registro -> modelMapper.map(registro, RegistroDto.class));
+		return new ResponseEntity<Page<RegistroDto>>(dto, HttpStatus.OK);
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Registro> findById(@PathVariable Long id){
+	public ResponseEntity<RegistroDto> findById(@PathVariable Long id){
 		Registro registro = service.findById(id);
-		return new ResponseEntity<Registro>(registro, HttpStatus.OK);
+		RegistroDto dto = modelMapper.map(registro, RegistroDto.class);
+		return new ResponseEntity<RegistroDto>(dto, HttpStatus.OK);
 	}
 	
-	@GetMapping("/disciplina/{disciplina}")
-	public ResponseEntity<List<Registro>> findByDisciplina(@PathVariable String disciplina){
+	@GetMapping(params = {"disciplina"})
+	public ResponseEntity<List<RegistroDto>> findByDisciplina(@RequestParam("disciplina") String disciplina){
 		List<Registro> registros = service.findByDisciplina(disciplina);
-		return new ResponseEntity<List<Registro>>(registros, HttpStatus.OK);
+		List<RegistroDto> dto = Arrays.asList(modelMapper.map(registros, RegistroDto[].class));
+		return new ResponseEntity<List<RegistroDto>>(dto, HttpStatus.OK);
 	}
 	
-	@GetMapping("/periodo/matutino")
-	public ResponseEntity<List<Registro>> findByPeriodoMatutino(){
+	@GetMapping("/matutino")
+	public ResponseEntity<List<RegistroDto>> findByPeriodoMatutino(){
 		List<Registro> registros = service.findByPeriodoMatutino();
-		return new ResponseEntity<List<Registro>>(registros, HttpStatus.OK);
+		List<RegistroDto> dto = Arrays.asList(modelMapper.map(registros, RegistroDto[].class));
+		return new ResponseEntity<List<RegistroDto>>(dto, HttpStatus.OK);
 	}
 	
-	@GetMapping("/periodo/vespertino")
-	public ResponseEntity<List<Registro>> findByPeriodoVespertino(){
+	@GetMapping("/vespertino")
+	public ResponseEntity<List<RegistroDto>> findByPeriodoVespertino(){
 		List<Registro> registros = service.findByPeriodoVespertino();
-		return new ResponseEntity<List<Registro>>(registros, HttpStatus.OK);
+		List<RegistroDto> dto = Arrays.asList(modelMapper.map(registros, RegistroDto[].class));
+		return new ResponseEntity<List<RegistroDto>>(dto, HttpStatus.OK);
 	}
 	
 	@PostMapping
-	public ResponseEntity<Registro> save(@RequestBody @Valid Registro obj){
+	public ResponseEntity<RegistroDto> save(@RequestBody @Valid Registro obj){
 		Registro registro = service.save(obj);
-		return new ResponseEntity<Registro>(registro, HttpStatus.CREATED);
+		RegistroDto dto = modelMapper.map(registro, RegistroDto.class);
+		return new ResponseEntity<RegistroDto>(dto, HttpStatus.CREATED);
 	}
 	
 	@DeleteMapping("/{id}")
@@ -71,9 +92,10 @@ public class RegistroController {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Registro> update(@RequestBody @Valid Registro obj, @PathVariable Long id){
+	public ResponseEntity<RegistroDto> update(@RequestBody @Valid Registro obj, @PathVariable Long id){
 		Registro registro = service.update(obj, id);
-		return new ResponseEntity<Registro>(registro, HttpStatus.OK);
+		RegistroDto dto = modelMapper.map(registro, RegistroDto.class);
+		return new ResponseEntity<RegistroDto>(dto, HttpStatus.OK);
 	}
 	
 }

@@ -1,5 +1,6 @@
 package com.richardeveloper.services.exceptions;
 
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,4 +84,19 @@ public class ResourceExceptionHandler {
 		
 		return new ResponseEntity<StandardError>(error, status);
 	}
+
+	@ExceptionHandler(DateTimeException.class)
+	public ResponseEntity<StandardError> resourceNotFound(DateTimeException exception, HttpServletRequest request){
+		String err = "Time or date format invalid";
+		HttpStatus status = HttpStatus.NOT_FOUND;
+		
+		StandardError error = new StandardError(Instant.now(),
+				status.value(),
+				err,
+				exception.getMessage(),
+				request.getRequestURI());
+		
+		return new ResponseEntity<StandardError>(error, status);
+	}
+	
 }
