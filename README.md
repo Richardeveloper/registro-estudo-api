@@ -4,6 +4,6 @@
 <li>Java 11</li>
 <li>Spring Boot</li>
 <li>Spring Data JPA</li>
-<li>Banco de Dados MySQL</li>
+<li>MySQL Database</li>
 <li>ModelMapper Library</li>
 </ul>
