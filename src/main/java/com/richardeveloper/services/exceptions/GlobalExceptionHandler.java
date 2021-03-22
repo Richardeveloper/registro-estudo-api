@@ -18,13 +18,14 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.richardeveloper.resources.errors.InsertValidationError;
 import com.richardeveloper.resources.errors.StandardError;
 import com.richardeveloper.resources.exceptions.ResourceNotFoundException;
 
 @RestControllerAdvice
-public class ResourceExceptionHandler {
+public class GlobalExceptionHandler {
 
 	@Autowired
 	private MessageSource messageSource;
@@ -60,7 +61,7 @@ public class ResourceExceptionHandler {
 	@ExceptionHandler(EmptyResultDataAccessException.class)
 	public ResponseEntity<StandardError> resourceNotFound(EmptyResultDataAccessException exception, HttpServletRequest request){
 		String err = "Resource Is Not Exist";
-		HttpStatus status = HttpStatus.NOT_FOUND;
+		HttpStatus status = HttpStatus.BAD_REQUEST;
 		
 		StandardError error = new StandardError(Instant.now(),
 				status.value(),
@@ -74,7 +75,7 @@ public class ResourceExceptionHandler {
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ResponseEntity<StandardError> resourceNotFound(HttpMessageNotReadableException exception, HttpServletRequest request){
 		String err = "Resource is Not Valid";
-		HttpStatus status = HttpStatus.NOT_FOUND;
+		HttpStatus status = HttpStatus.BAD_REQUEST;
 		
 		StandardError error = new StandardError(Instant.now(),
 				status.value(),
@@ -88,7 +89,21 @@ public class ResourceExceptionHandler {
 	@ExceptionHandler(DateTimeException.class)
 	public ResponseEntity<StandardError> resourceNotFound(DateTimeException exception, HttpServletRequest request){
 		String err = "Time or date format invalid";
-		HttpStatus status = HttpStatus.NOT_FOUND;
+		HttpStatus status = HttpStatus.BAD_REQUEST;
+		
+		StandardError error = new StandardError(Instant.now(),
+				status.value(),
+				err,
+				exception.getMessage(),
+				request.getRequestURI());
+		
+		return new ResponseEntity<StandardError>(error, status);
+	}
+	
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<StandardError> resourceNotFound(MethodArgumentTypeMismatchException exception, HttpServletRequest request){
+		String err = "Argument types are not compatible";
+		HttpStatus status = HttpStatus.BAD_REQUEST;
 		
 		StandardError error = new StandardError(Instant.now(),
 				status.value(),

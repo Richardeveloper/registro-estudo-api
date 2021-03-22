@@ -1,5 +1,6 @@
 package com.richardeveloper.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,12 +12,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.richardeveloper.models.Registro;
+import com.richardeveloper.models.specifications.RegistroSpecification;
 import com.richardeveloper.repository.RegistroRepository;
 import com.richardeveloper.resources.exceptions.ResourceNotFoundException;
 
 @Service
 public class RegistroService {
 
+//	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyy");
+	
 	@Autowired
 	private RegistroRepository repository;
 	
@@ -29,8 +33,7 @@ public class RegistroService {
 		Pageable pagination = PageRequest.of(page, size, Sort.by("data"));
 		Page<Registro> registros = repository.findAll(pagination);
 		return registros;
-		
-	}
+	}	
 	
 	public Registro findById(Long id) {
 		Optional<Registro> registro = repository.findById(id);
@@ -38,19 +41,25 @@ public class RegistroService {
 	}
 	
 	public List<Registro> findByDisciplina(String disciplina){
-		List<Registro> registros = repository.findByDisciplina(disciplina);
+		List<Registro> registros = repository.findAll(RegistroSpecification.disciplina(disciplina));
 		return registros;
 	}
 	
-	public List<Registro> findByPeriodoMatutino(){
-		List<Registro> registros = repository.findByPeriodoMatutino();
-		return registros;
-	}
-	public List<Registro> findByPeriodoVespertino(){
-		List<Registro> registros = repository.findByPeriodoVespertino();
+	public List<Registro> findByData(LocalDate data){
+		List<Registro> registros = repository.findAll(RegistroSpecification.data(data));
 		return registros;
 	}
 	
+	public List<Registro> findBetweenData(LocalDate inicio, LocalDate fim){
+		List<Registro> registros = repository.findAll(RegistroSpecification.betweenData(inicio, fim));
+		return registros;
+	}
+	
+	public List<Registro> findByPeriodo(String periodo){
+		List<Registro> registros = repository.findAll(RegistroSpecification.periodo(periodo));
+		return registros;
+	}
+
 	public Registro save(Registro registro) {
 		registro.duration();
 		return repository.save(registro);

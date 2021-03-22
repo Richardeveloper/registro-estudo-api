@@ -1,5 +1,6 @@
 package com.richardeveloper.controllers;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,6 +9,8 @@ import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -43,13 +46,6 @@ public class RegistroController {
 		return new ResponseEntity<List<RegistroDto>>(dto, HttpStatus.OK);
 	}
 	
-	@GetMapping(params = {"page", "size"})
-	public ResponseEntity<Page<RegistroDto>> findAllPagination(@RequestParam("page") int page, @RequestParam("size") int size){
-		Page<Registro> registros = service.findAllPagination(page, size);
-		Page<RegistroDto> dto = registros.map(registro -> modelMapper.map(registro, RegistroDto.class));
-		return new ResponseEntity<Page<RegistroDto>>(dto, HttpStatus.OK);
-	}
-	
 	@GetMapping("/{id}")
 	public ResponseEntity<RegistroDto> findById(@PathVariable Long id){
 		Registro registro = service.findById(id);
@@ -57,23 +53,39 @@ public class RegistroController {
 		return new ResponseEntity<RegistroDto>(dto, HttpStatus.OK);
 	}
 	
-	@GetMapping(params = {"disciplina"})
+	@GetMapping(params = {"page", "size"})
+	public ResponseEntity<Page<RegistroDto>> findAllPagination(@RequestParam("page") int page, @RequestParam("size") int size){
+		Page<Registro> registros = service.findAllPagination(page, size);
+		Page<RegistroDto> dto = registros.map(registro -> modelMapper.map(registro, RegistroDto.class));
+		return new ResponseEntity<Page<RegistroDto>>(dto, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/filter", params = {"disciplina"})
 	public ResponseEntity<List<RegistroDto>> findByDisciplina(@RequestParam("disciplina") String disciplina){
 		List<Registro> registros = service.findByDisciplina(disciplina);
 		List<RegistroDto> dto = Arrays.asList(modelMapper.map(registros, RegistroDto[].class));
 		return new ResponseEntity<List<RegistroDto>>(dto, HttpStatus.OK);
 	}
 	
-	@GetMapping("/matutino")
-	public ResponseEntity<List<RegistroDto>> findByPeriodoMatutino(){
-		List<Registro> registros = service.findByPeriodoMatutino();
+	@GetMapping(value = "/filter", params = {"data"})
+	public ResponseEntity<List<RegistroDto>> findByData(@RequestParam("data") 
+				@DateTimeFormat(iso = ISO.DATE_TIME , pattern = "dd/MM/yyyy") LocalDate data){
+		List<Registro> registros = service.findByData(data);
 		List<RegistroDto> dto = Arrays.asList(modelMapper.map(registros, RegistroDto[].class));
 		return new ResponseEntity<List<RegistroDto>>(dto, HttpStatus.OK);
 	}
 	
-	@GetMapping("/vespertino")
-	public ResponseEntity<List<RegistroDto>> findByPeriodoVespertino(){
-		List<Registro> registros = service.findByPeriodoVespertino();
+	@GetMapping(value = "/filter", params = {"inicio", "fim"})
+	public ResponseEntity<List<RegistroDto>> findBetweenData(@DateTimeFormat(iso = ISO.DATE_TIME , pattern = "dd/MM/yyyy") 
+								@RequestParam("inicio") LocalDate inicio, @RequestParam("fim") LocalDate fim){ 
+		List<Registro> registros = service.findBetweenData(inicio, fim);
+		List<RegistroDto> dto = Arrays.asList(modelMapper.map(registros, RegistroDto[].class));
+		return new ResponseEntity<List<RegistroDto>>(dto, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/filter", params = {"periodo"})
+	public ResponseEntity<List<RegistroDto>> findByPeriodo(@RequestParam("periodo") String periodo){
+		List<Registro> registros = service.findByPeriodo(periodo);
 		List<RegistroDto> dto = Arrays.asList(modelMapper.map(registros, RegistroDto[].class));
 		return new ResponseEntity<List<RegistroDto>>(dto, HttpStatus.OK);
 	}

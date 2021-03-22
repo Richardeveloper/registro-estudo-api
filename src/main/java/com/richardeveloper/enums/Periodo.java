@@ -24,7 +24,7 @@ public enum Periodo {
 				return item;
 			}
 		}
-		throw new ResourceAccessException("Período não existe");
+		throw new ResourceAccessException("Period does not exists");
 	}
 	
 }
