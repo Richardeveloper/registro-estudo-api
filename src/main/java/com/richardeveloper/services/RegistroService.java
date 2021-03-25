@@ -6,9 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.richardeveloper.models.Registro;
@@ -23,14 +21,8 @@ public class RegistroService {
 	
 	@Autowired
 	private RegistroRepository repository;
-	
-	public List<Registro> findAll(){
-		List<Registro> registros = repository.findAll();
-		return registros;
-	}
 
-	public Page<Registro> findAllPagination(int page, int size) {
-		Pageable pagination = PageRequest.of(page, size, Sort.by("data"));
+	public Page<Registro> findAllPagination(Pageable pagination) {
 		Page<Registro> registros = repository.findAll(pagination);
 		return registros;
 	}	

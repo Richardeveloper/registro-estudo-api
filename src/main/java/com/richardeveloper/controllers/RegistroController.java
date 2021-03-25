@@ -8,7 +8,11 @@ import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
@@ -39,13 +43,14 @@ public class RegistroController {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@GetMapping
-	public ResponseEntity<List<RegistroDto>> findAll(){
-		List<Registro> registros = service.findAll();
-		List<RegistroDto> dto = Arrays.asList(modelMapper.map(registros, RegistroDto[].class));
-		return new ResponseEntity<List<RegistroDto>>(dto, HttpStatus.OK);
+	@GetMapping()
+	@Cacheable(value = "ListaRegistros")
+	public ResponseEntity<Page<RegistroDto>> findAllPagination(@PageableDefault(page = 0, size = 10, sort = "data") Pageable pagination){
+		Page<Registro> registros = service.findAllPagination(pagination);
+		Page<RegistroDto> dto = registros.map(registro -> modelMapper.map(registro, RegistroDto.class));
+		return new ResponseEntity<Page<RegistroDto>>(dto, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/{id}")
 	public ResponseEntity<RegistroDto> findById(@PathVariable Long id){
 		Registro registro = service.findById(id);
@@ -53,12 +58,6 @@ public class RegistroController {
 		return new ResponseEntity<RegistroDto>(dto, HttpStatus.OK);
 	}
 	
-	@GetMapping(params = {"page", "size"})
-	public ResponseEntity<Page<RegistroDto>> findAllPagination(@RequestParam("page") int page, @RequestParam("size") int size){
-		Page<Registro> registros = service.findAllPagination(page, size);
-		Page<RegistroDto> dto = registros.map(registro -> modelMapper.map(registro, RegistroDto.class));
-		return new ResponseEntity<Page<RegistroDto>>(dto, HttpStatus.OK);
-	}
 	
 	@GetMapping(value = "/filter", params = {"disciplina"})
 	public ResponseEntity<List<RegistroDto>> findByDisciplina(@RequestParam("disciplina") String disciplina){
@@ -91,6 +90,7 @@ public class RegistroController {
 	}
 	
 	@PostMapping
+	@CacheEvict(value = "ListaRegistros", allEntries = true)
 	public ResponseEntity<RegistroDto> save(@RequestBody @Valid Registro obj){
 		Registro registro = service.save(obj);
 		RegistroDto dto = modelMapper.map(registro, RegistroDto.class);
@@ -98,12 +98,14 @@ public class RegistroController {
 	}
 	
 	@DeleteMapping("/{id}")
+	@CacheEvict(value = "ListaRegistros", allEntries = true)
 	public ResponseEntity<Void> delete(@PathVariable Long id){
 		service.delete(id);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	
 	@PutMapping("/{id}")
+	@CacheEvict(value = "ListaRegistros", allEntries = true)
 	public ResponseEntity<RegistroDto> update(@RequestBody @Valid Registro obj, @PathVariable Long id){
 		Registro registro = service.update(obj, id);
 		RegistroDto dto = modelMapper.map(registro, RegistroDto.class);

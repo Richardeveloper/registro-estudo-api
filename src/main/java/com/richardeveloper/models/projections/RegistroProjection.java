@@ -7,4 +7,5 @@ public interface RegistroProjection {
 	public Long getId();
 	public String getDisciplina();
 	public LocalTime getDuracao();
+	
 }
