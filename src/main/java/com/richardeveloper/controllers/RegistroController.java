@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.richardeveloper.dto.RegistroDto;
 import com.richardeveloper.models.Registro;
+import com.richardeveloper.models.dto.RegistroDto;
 import com.richardeveloper.services.RegistroService;
 
 @RestController
@@ -57,7 +57,6 @@ public class RegistroController {
 		RegistroDto dto = modelMapper.map(registro, RegistroDto.class);
 		return new ResponseEntity<RegistroDto>(dto, HttpStatus.OK);
 	}
-	
 	
 	@GetMapping(value = "/filter", params = {"disciplina"})
 	public ResponseEntity<List<RegistroDto>> findByDisciplina(@RequestParam("disciplina") String disciplina){

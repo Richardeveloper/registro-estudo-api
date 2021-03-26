@@ -1,4 +1,4 @@
-package com.richardeveloper.dto;
+package com.richardeveloper.models.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

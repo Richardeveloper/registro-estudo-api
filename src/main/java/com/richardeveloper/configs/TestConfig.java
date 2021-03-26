@@ -81,22 +81,10 @@ public class TestConfig implements CommandLineRunner {
 				LocalDate.parse("2021-02-17"),
 				LocalTime.of(14, 02),
 				LocalTime.of(18, 55),
-				Periodo.VESPERTINO);
+				Periodo.VESPERTINO);		
 		
-		Registro r11 = new Registro("Curso Angular Fundamentos",
-				LocalDate.parse("2021-02-18"),
-				LocalTime.of(8, 25),
-				LocalTime.of(13, 45),
-				Periodo.MATUTINO);
+		registroRepository.saveAll(Arrays.asList(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10));
 		
-		Registro r12 = new Registro("Curso Spring Data JPA",
-				LocalDate.parse("2021-02-18"),
-				LocalTime.of(14, 11),
-				LocalTime.of(17, 33),
-				Periodo.VESPERTINO);
-		
-		
-		registroRepository.saveAll(Arrays.asList(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12));
 	}
 
 }
