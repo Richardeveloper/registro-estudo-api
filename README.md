@@ -6,5 +6,6 @@
 <li>Spring Boot</li>
 <li>Spring Data JPA</li>
 <li>MySQL Database</li>
+<li>Autenticação via Token com JWT</li>
 <li>ModelMapper Library</li>
 </ul>
